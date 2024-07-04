@@ -1,4 +1,11 @@
 from django.forms.utils import ErrorList
+import structlog
+
+
+def get_{{ cookiecutter.project_slug }}_logger(name):
+    """This will add a `{{ cookiecutter.project_slug }}` prefix to logger for easy configuration."""
+
+    return structlog.get_logger(f"{{ cookiecutter.project_slug }}.{name}")
 
 
 class DivErrorList(ErrorList):
@@ -9,7 +16,7 @@ class DivErrorList(ErrorList):
         if not self:
             return ""
         return f"""
-            <div class="p-4 my-4 border border-red-600 border-solid rounded-md bg-red-50">
+            <div class="p-4 my-4 bg-red-50 rounded-md border border-red-600 border-solid">
               <div class="flex">
                 <div class="flex-shrink-0">
                   <!-- Heroicon name: solid/x-circle -->

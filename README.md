@@ -1,16 +1,12 @@
-To start you'll need to start the Mkdocs server, where a step-by-step process will be provided to you. To do this:
-1. `poetry install`
-2. `poetry run mkdocs serve`
-
 ## Features
 
-- For Django 4.0
-- Works with Python 3.11
+- Python 3.12
+- Django 5
+- Telegram Bot via pyTelegramBotAPI
+- Logging with structlog
 - Registration via django-allauth
 - 12-Factor based settings via django-environ
-- TailwindCSS & StimulusJS (Hotwire) - comes with Webpack configure for dev & prod.
-- Comes with custom user model ready to go
-- SQLite for Database
+- Postgres DB
 
 
 ## Roadmap
