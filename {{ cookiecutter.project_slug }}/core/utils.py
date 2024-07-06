@@ -1,11 +1,13 @@
 from django.forms.utils import ErrorList
 import structlog
 
+from core.models import TelegramUser
 
-def get_{{ cookiecutter.project_slug }}_logger(name):
-    """This will add a `{{ cookiecutter.project_slug }}` prefix to logger for easy configuration."""
 
-    return structlog.get_logger(f"{{ cookiecutter.project_slug }}.{name}")
+def get_or_create_telegram_user(telegram_user_id):
+    telegram_user, _ = TelegramUser.objects.get_or_create(telegram_user_id=telegram_user_id)
+
+    return telegram_user
 
 
 class DivErrorList(ErrorList):
@@ -30,3 +32,9 @@ class DivErrorList(ErrorList):
               </div>
             </div>
          """
+
+
+def get_{{ cookiecutter.project_slug }}_logger(name):
+    """This will add a `{{ cookiecutter.project_slug }}` prefix to logger for easy configuration."""
+
+    return structlog.get_logger(f"{{ cookiecutter.project_slug }}.{name}")

@@ -7,4 +7,4 @@ All the information on how to run, develop and update your new application can b
 
 To start you'll need to runb these 2 commands:
 1. `poetry install`
-2. `poetry run mkdocs serve`
+2. `pre-commit install`

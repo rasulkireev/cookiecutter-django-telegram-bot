@@ -6,7 +6,7 @@ on:
         - main
 
 env:
-  PROJECT_NAME: ${{ cookiecutter.project_slug | replace('_', '-') }}
+  PROJECT_NAME: {{ cookiecutter.project_slug | replace('_', '-') }}
 
 jobs:
   build-and-deploy:
@@ -31,7 +31,7 @@ jobs:
         with:
           context: .
           push: true
-          file: deployment/Dockerfile
+          file: deployment/Dockerfile.bot
           tags: ghcr.io/{{ "${{ github.repository }}" }}
 
       - name: Deploy to CapRover

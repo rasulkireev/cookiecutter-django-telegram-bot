@@ -1,25 +1,17 @@
-version: '3'
+version: '3.8'
 
 services:
   db:
-    image: postgres
-    volumes:
-      - ./data/db:/var/lib/postgresql/data
+    image: rasulkireev/custom-postgres:15
+    restart: always
     environment:
-      - POSTGRES_DB=mydatabase
-      - POSTGRES_USER=mydatabaseuser
-      - POSTGRES_PASSWORD=mypassword
-
-  web:
-    build:
-      context: .
-      dockerfile: deployment/Dockerfile.server
-    command: python manage.py runserver 0.0.0.0:8000
-    volumes:
-      - .:/code
+      POSTGRES_DB: {{ cookiecutter.project_slug }}
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
     ports:
-      - "8000:8000"
-    depends_on:
-      - db
-    env_file:
-      - .env
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+volumes:
+  db_data:

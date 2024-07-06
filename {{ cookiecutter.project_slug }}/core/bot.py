@@ -1,27 +1,68 @@
-import telebot
+from asgiref.sync import sync_to_async
+from django.conf import settings
+from telegram import BotCommand, Update
+from telegram.ext import (
+    CommandHandler,
+    ApplicationBuilder,
+    ContextTypes,
+)
 
-from {{ cookiecutter.project_slug }}.settings import TELEGRAM_BOT_TOKEN
-from core.utils import get_{{ cookiecutter.project_slug }}_logger
+from core.utils import (
+    get_or_create_telegram_user,
+    get_{{ cookiecutter.project_slug }}_logger,
+)
 
-logger = get_{{ cookiecutter.project_slug }}_logger(__name__)
+logger = get_track_prices_ru_logger(__name__)
 
-bot = telebot.TeleBot(TELEGRAM_BOT_TOKEN)
+async def post_init(application) -> None:
+    await application.bot.set_my_commands(
+        [
+          BotCommand("help", "Помощь"),
+          BotCommand("start", "Начать диалог"),
+        ],
+        language_code="ru"
+    )
+    await application.bot.set_chat_menu_button()
 
 
-@bot.message_handler(commands=['help'])
-def send_help(message):
-    logger.info(f"/help command requested", telegram_user_id=message.from_user.id)
-    help_text = (
-        "Here are the commands you can use:\n"
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    telegram_user = await sync_to_async(get_or_create_telegram_user)(update.message.from_user.id)
+
+    logger.info(f"/start command requested", telegram_user_id=telegram_user.telegram_user_id)
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id, text="Привет, как дела?"
+    )
+    logger.info(f"/start command executed", telegram_user_id=telegram_user.telegram_user_id)
+
+
+async def help(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    telegram_user = await sync_to_async(get_or_create_telegram_user)(update.message.from_user.id)
+
+    logger.info(f"/help command requested", telegram_user_id=telegram_user.telegram_user_id)
+    text = (
+        "Here are the commands you can use:\n\n"
         "/help - Show this help message\n"
         "/start - Get a welcome message\n"
     )
-    bot.reply_to(message, help_text)
-    logger.info(f"/help command executed", telegram_user_id=message.from_user.id)
+    await context.bot.send_message(
+        chat_id=update.effective_chat.id, text=text
+    )
+    logger.info(f"/help command executed", telegram_user_id=telegram_user.telegram_user_id)
 
 
-@bot.message_handler(commands=['start'])
-def send_welcome(message):
-    logger.info(f"/start command requested", telegram_user_id=message.from_user.id)
-    bot.reply_to(message, "Привет, как дела?")
-    logger.info(f"/start command executed", telegram_user_id=message.from_user.id)
+def run_bot():
+    application = (
+        ApplicationBuilder()
+        .token(settings.TELEGRAM_BOT_TOKEN)
+        .post_init(post_init)
+        .build()
+    )
+    logger.info("Started the Telegram Bot Server")
+
+    start_handler = CommandHandler('start', start)
+    caps_handler = CommandHandler('help', help)
+
+    application.add_handler(start_handler)
+    application.add_handler(caps_handler)
+
+    application.run_polling()
