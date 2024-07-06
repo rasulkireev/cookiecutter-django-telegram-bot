@@ -12,7 +12,7 @@ from core.utils import (
     get_{{ cookiecutter.project_slug }}_logger,
 )
 
-logger = get_track_prices_ru_logger(__name__)
+logger = get_{{ cookiecutter.project_slug }}_logger(__name__)
 
 async def post_init(application) -> None:
     await application.bot.set_my_commands(
